@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 // 引用框架定义的 float16/bfloat16 类型支持
@@ -90,7 +92,9 @@ void calculate_cpu_impl(
     // 维度 0 的大小
     int64_t dim0_size = shape[0];
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)numel; ++i) {
         // --- A. 坐标反解 ---
         std::vector<int64_t> coords(ndim);

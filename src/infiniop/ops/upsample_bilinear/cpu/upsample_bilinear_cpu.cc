@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -123,7 +125,9 @@ void calculate_cpu_impl(
 
     size_t n_c = N * C; // 合并 Batch 和 Channel 维度进行并行
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t nc = 0; nc < (ptrdiff_t)n_c; ++nc) {
         const size_t n = static_cast<size_t>(nc) / C;
         const size_t c = static_cast<size_t>(nc) % C;

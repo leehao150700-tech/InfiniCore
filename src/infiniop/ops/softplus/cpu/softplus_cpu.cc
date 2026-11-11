@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -67,7 +69,9 @@ void calculate_cpu_impl(
     auto out_ptr = reinterpret_cast<T *>(output);
     auto in_ptr = reinterpret_cast<const T *>(input);
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)num_elements; ++i) {
         // 1. 计算输入偏移量 (Input Offset)
         size_t input_offset = i; // 默认为线性索引

@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -65,7 +67,9 @@ void calculate_cpu_impl(
     auto weight_ptr = reinterpret_cast<const T *>(weight);
 
     if (reduction == 0) {
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
         for (ptrdiff_t n = 0; n < (ptrdiff_t)N; ++n) {
             int64_t target_idx = tar_ptr[n];
 
@@ -103,7 +107,9 @@ void calculate_cpu_impl(
     } else {
         double total_loss = 0.0;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for reduction(+ : total_loss) schedule(static)
+#endif
         for (ptrdiff_t n = 0; n < (ptrdiff_t)N; ++n) {
             int64_t target_idx = tar_ptr[n];
 

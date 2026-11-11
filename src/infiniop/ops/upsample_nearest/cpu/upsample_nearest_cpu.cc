@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -88,7 +90,9 @@ void calculate_cpu_impl(
 
     size_t n_c = N * C; // 合并 Batch 和 Channel 维度进行并行
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t nc = 0; nc < (ptrdiff_t)n_c; ++nc) {
         // 当前 channel 的输入输出起始指针
         const T *src_base = in_ptr + nc * in_h * in_w;

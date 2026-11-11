@@ -3,7 +3,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 namespace op::float_power::cpu {
 
@@ -62,7 +64,9 @@ void calculate_cpu_impl(
     bool is_sqrt = is_scalar && (scalar_exp == 0.5f);
     bool is_identity = is_scalar && (scalar_exp == 1.0f);
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < ptrdiff_t(numel); ++i) {
         // 1. 读取输入并转为 float
         float in_val = utils::cast<float>(in_ptr[i]);

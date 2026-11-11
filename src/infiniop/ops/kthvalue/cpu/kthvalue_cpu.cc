@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <type_traits> // 引入 type_traits 以支持 constexpr 判断
 #include <utility>
 #include <vector>
@@ -66,7 +68,9 @@ void calculate_cpu_impl(
     // k 在输入中是 1-based，转为 0-based 用于 vector索引
     int k_idx = k - 1;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t task_id = 0; task_id < (ptrdiff_t)total_tasks; ++task_id) {
         // 解算当前任务对应的外部索引和内部索引
         size_t o = task_id / inner_size;

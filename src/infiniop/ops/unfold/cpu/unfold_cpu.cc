@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cstring>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -80,7 +82,9 @@ void calculate_cpu_impl(
 
     int64_t total_nc = batch * in_c;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (int64_t idx = 0; idx < total_nc; ++idx) {
 
         int64_t n = idx / in_c;

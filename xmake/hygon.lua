@@ -48,7 +48,15 @@ local function add_hygon_dtk_paths(attrs)
 
     for _, include_dir in ipairs(include_dirs) do
         if os.isdir(include_dir) then
-            add_includedirs(include_dir, attrs)
+            -- H3_DTK_ROOT_HEADERS_FALLBACK
+            if include_dir == path.join(dtk_root, "include") then
+                local fallback_attrs = {force = true, public = attrs.public}
+                add_cflags("-idirafter", include_dir, fallback_attrs)
+                add_cxxflags("-idirafter", include_dir, fallback_attrs)
+                add_cuflags("-idirafter", include_dir, fallback_attrs)
+            else
+                add_includedirs(include_dir, attrs)
+            end
         end
     end
     for _, link_dir in ipairs(link_dirs) do
@@ -289,7 +297,7 @@ target("infinicore_cpp_api")
         add_defines("ENABLE_ATEN")
         if FLASH_ATTN_ROOT and FLASH_ATTN_ROOT ~= "" then
             add_defines("ENABLE_FLASH_ATTN")
-            add_packages("pybind11")
+            if os.getenv("H3_OFFLINE_BUILD") ~= "1" then add_packages("pybind11") end
         end
     end
 

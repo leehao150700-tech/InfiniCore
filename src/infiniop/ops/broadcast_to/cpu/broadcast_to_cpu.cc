@@ -1,6 +1,8 @@
 #include "broadcast_to_cpu.h"
 #include "../../../devices/cpu/common_cpu.h"
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -49,7 +51,9 @@ void calculate_cpu_impl(
     auto in_ptr = reinterpret_cast<const T *>(input);
 
 // 并行遍历输出的每一个元素
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)count; ++i) {
         size_t temp_idx = i;
         size_t input_offset = 0;

@@ -4,7 +4,9 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -70,7 +72,9 @@ void calculate_cpu_impl(
     // Flatten outer+inner for OpenMP parallelism on Windows
     size_t total_outer_inner = outer_size * inner_size;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t idx = 0; idx < (ptrdiff_t)total_outer_inner; ++idx) {
         // Recover original i and j
         size_t i = idx / inner_size;

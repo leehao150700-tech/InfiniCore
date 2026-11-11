@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -59,7 +61,9 @@ void calculate_cpu_impl(
     float half_delta = 0.5f * delta;
 
     if (reduction == 0) { // None
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
         for (ptrdiff_t i = 0; i < (ptrdiff_t)count; ++i) {
             float val = utils::cast<float>(in_ptr[i]);
             float tgt = utils::cast<float>(tar_ptr[i]);
@@ -81,7 +85,9 @@ void calculate_cpu_impl(
     } else { // Mean or Sum
         double total_loss = 0.0;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for reduction(+ : total_loss) schedule(static)
+#endif
         for (ptrdiff_t i = 0; i < (ptrdiff_t)count; ++i) {
             float val = utils::cast<float>(in_ptr[i]);
             float tgt = utils::cast<float>(tar_ptr[i]);

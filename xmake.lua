@@ -1,6 +1,18 @@
 add_rules("mode.debug", "mode.release")
+-- Private H3 build: use the already verified offline headers.
+local h3_offline = os.getenv("H3_OFFLINE_BUILD") == "1"
+if h3_offline then
+    local root = os.getenv("SONGSHAN_ENV_HOME")
+    if not root or not os.isfile(path.join(root, "python/pybind11/include/pybind11/pybind11.h")) then os.raise("Private pybind11 headers missing") end
+    if not os.isfile(path.join(root, "tools/include/boost/stacktrace.hpp")) then os.raise("Private Boost headers missing") end
+    add_sysincludedirs(path.join(root, "python/pybind11/include"), path.join(root, "tools/include"))
+    local abi = os.getenv("INFINILM_CXX11_ABI")
+    if abi ~= "0" and abi ~= "1" then os.raise("Torch CXX11 ABI must be explicit") end
+    add_defines("_GLIBCXX_USE_CXX11_ABI=" .. abi)
+else
 add_requires("boost", {configs = {stacktrace = true}})
 add_requires("pybind11")
+end
 
 -- Define color codes
 local GREEN = '\27[0;32m'
@@ -855,7 +867,7 @@ target("infinicore_cpp_api")
     -- pybind11/embed.h for mha_kvcache branch
     if has_config("moore-gpu") and has_config("aten") and has_config("flash-attn") then
         add_defines("ENABLE_MOORE_MATE_FLASH_ATTN")
-        add_packages("pybind11")
+        if not h3_offline then add_packages("pybind11") end
     end
 
     before_build(function (target)
@@ -1086,7 +1098,7 @@ target("_infinicore")
 
     set_default(false)
     add_rules("python.library", {soabi = true})
-    add_packages("pybind11")
+    if not h3_offline then add_packages("pybind11") end
     set_languages("cxx17")
 
     add_deps("infinicore_cpp_api")

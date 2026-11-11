@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -120,7 +122,9 @@ void calculate_cpu_impl(
     const auto &str_end = opaque->end_strides;
     const auto &str_weight = opaque->weight_strides;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)numel; ++i) {
         size_t temp_idx = i;
         int64_t offset_start = 0;

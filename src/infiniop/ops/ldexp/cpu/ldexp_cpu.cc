@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <type_traits>
 #include <vector>
 
@@ -81,7 +83,9 @@ void calculate_cpu_impl(
     // 使用 TExp 转换指针，避免将 int 数据误读为 float
     auto exp_ptr = reinterpret_cast<const TExp *>(exp);
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)total_tasks; ++i) {
         // 坐标映射逻辑：线性索引 -> 多维坐标 -> 输入偏移量
         size_t temp_idx = i;

@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -95,7 +97,9 @@ void calculate_cpu_impl(
 
     // Reduction == 0: None
     if (reduction == 0) {
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
         for (ptrdiff_t n = 0; n < (ptrdiff_t)N; ++n) {
             const T *a_row = anc_ptr + n * D;
             const T *p_row = pos_ptr + n * D;
@@ -120,7 +124,9 @@ void calculate_cpu_impl(
     else {
         double total_loss = 0.0;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for reduction(+ : total_loss) schedule(static)
+#endif
         for (ptrdiff_t n = 0; n < (ptrdiff_t)N; ++n) {
             const T *a_row = anc_ptr + n * D;
             const T *p_row = pos_ptr + n * D;

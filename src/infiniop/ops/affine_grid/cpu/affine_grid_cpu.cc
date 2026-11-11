@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 namespace op::affine_grid::cpu {
 
@@ -69,7 +71,9 @@ void calculate_cpu_impl(
     auto in_ptr = reinterpret_cast<const Tdata *>(input);
 
     // 并行化处理 Batch
+#ifdef ENABLE_OMP
 #pragma omp parallel for
+#endif
     for (ptrdiff_t n = 0; n < (ptrdiff_t)batch; ++n) {
 
         const Tdata *theta_n = in_ptr + n * 6;

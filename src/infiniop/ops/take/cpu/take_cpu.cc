@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cstring>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 namespace op::take::cpu {
 
@@ -51,7 +53,9 @@ void calculate_cpu_impl(
     auto idx_ptr = reinterpret_cast<const TIdx *>(indices);
 
     // OpenMP 并行化处理
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)num_out; ++i) {
         TIdx idx = idx_ptr[i];
 

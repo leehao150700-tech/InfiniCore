@@ -5,7 +5,9 @@
 #include <cstdint>
 #include <limits>
 #include <numeric>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -94,7 +96,9 @@ void calculate_cpu_impl(
 
     float total_loss = 0.0f;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static) reduction(+ : total_loss)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)batch_size; ++i) {
         size_t offset = i * feature_dim;
 

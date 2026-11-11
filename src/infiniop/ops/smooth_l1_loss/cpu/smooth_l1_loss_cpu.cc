@@ -2,7 +2,9 @@
 #include "../../../devices/cpu/common_cpu.h"
 #include <algorithm>
 #include <cmath>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -61,7 +63,9 @@ void calculate_cpu_impl(
     // 模式 A: Elementwise (None)
     // ----------------------------------------------------
     if (reduction == 0) {
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
         for (ptrdiff_t i = 0; i < (ptrdiff_t)numel; ++i) {
             float in_val = utils::cast<float>(in_ptr[i]);
             float tar_val = utils::cast<float>(tar_ptr[i]);
@@ -85,7 +89,9 @@ void calculate_cpu_impl(
     else {
         double total_sum = 0.0;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for reduction(+ : total_sum) schedule(static)
+#endif
         for (ptrdiff_t i = 0; i < (ptrdiff_t)numel; ++i) {
             float in_val = utils::cast<float>(in_ptr[i]);
             float tar_val = utils::cast<float>(tar_ptr[i]);

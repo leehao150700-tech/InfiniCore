@@ -4,7 +4,9 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 #include <vector>
 
 #include "../../../../utils/custom_types.h"
@@ -57,7 +59,9 @@ void calculate_cpu_impl(
 
     size_t total_tasks = outer_size * inner_size;
 
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t task_id = 0; task_id < (ptrdiff_t)total_tasks; ++task_id) {
         // 解算当前任务对应的外部索引和内部索引
         size_t o = task_id / inner_size;

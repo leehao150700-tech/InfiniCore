@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifdef ENABLE_OMP
 #include <omp.h>
+#endif
 
 #include "../../../../utils/custom_types.h"
 
@@ -56,7 +58,9 @@ void calculate_cpu_impl(
     auto in_ptr = reinterpret_cast<const T *>(input);
 
 // 对每一行（输入向量的每个元素）进行并行计算
+#ifdef ENABLE_OMP
 #pragma omp parallel for schedule(static)
+#endif
     for (ptrdiff_t i = 0; i < (ptrdiff_t)rows; ++i) {
         // 将输入转换为 float/double 进行高精度计算，避免 fp16/bf16 累乘精度损失
         float x = utils::cast<float>(in_ptr[i]);
